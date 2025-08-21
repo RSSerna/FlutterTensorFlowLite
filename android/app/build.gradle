@@ -7,8 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.flutter_tflite_demo"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk 33
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -24,10 +23,10 @@ android {
         applicationId = "com.example.flutter_tflite_demo"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        minSdkVersion 19
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
     }
 
     buildTypes {
@@ -37,6 +36,13 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+}
+
+dependecies {
+    implementation "org.tensorflow:tensorflow-lite:2.9.0"
+    implementation "org.tensorflow:tensorflow-lite-support:0.4.3"
+    // Add the Flutter dependency.
+    // implementation "dev.flutter:flutter_embedding_release:1.0.0"
 }
 
 flutter {
