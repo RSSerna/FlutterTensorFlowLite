@@ -7,7 +7,34 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+
+    // Register the battery level method channel
+    let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
+    let batteryChannel = FlutterMethodChannel(name: "com.example.native_communicator",binaryMessenger: controller.binaryMessenger)
+
+    batteryChannel.setMethodCallHandler { ( call: FlutterMethodCall, result: @escaping FlutterResult ) in
+      if call.method == "getBatteryLevel" {
+        self.getBatteryLevel(result: result)
+      } else {
+        result(FlutterMethodNotImplemented)
+      }
+    }
+
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  //Get Battery Level
+  private func getBatteryLevel(result: @escaping FlutterResult) {
+    UIDevice.current.isBatteryMonitoringEnabled = true
+    let batteryLevel = UIDevice.current.batteryLevel
+
+    if( batteryLevel < 0 ) {
+      result(FlutterError(code: "UNAVAILABLE",
+                          message: "Battery level not available.",
+                          details: nil))
+    } else {
+      result("\(Int(batteryLevel * 100))%")
+    }
   }
 }
