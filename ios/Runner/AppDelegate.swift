@@ -10,12 +10,16 @@ import UIKit
 
     // Register the battery level method channel
     let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
-    let batteryChannel = FlutterMethodChannel(name: "com.example.native_communicator",binaryMessenger: controller.binaryMessenger)
+    let channel = FlutterMethodChannel(name: "com.example.native_communicator",binaryMessenger: controller.binaryMessenger)
 
-    batteryChannel.setMethodCallHandler { ( call: FlutterMethodCall, result: @escaping FlutterResult ) in
+    channel.setMethodCallHandler{(call: FlutterMethodCall, result: @escaping FlutterResult ) in
       if call.method == "getBatteryLevel" {
         self.getBatteryLevel(result: result)
-      } else {
+      } 
+      if call.method == "takePicture" {
+        self.takePicture(result: result)
+      }
+      else {
         result(FlutterMethodNotImplemented)
       }
     }
@@ -37,4 +41,38 @@ import UIKit
       result("\(Int(batteryLevel * 100))%")
     }
   }
+
+  //Take Picture
+  private func takePicture(result: @escaping FlutterResult) {
+    let imagePickerController = UIImagePickerController()
+    imagePickerController.sourceType = .camera
+    imagePickerController.delegate = self
+    imagePickerController.allowsEditing = false
+    if let controller = window?.rootViewController {
+      controller.present(imagePickerController, animated: true) //, completion: nil)
+      // result("Camera opened")
+    } else {
+      result(FlutterError(code: "UNAVAILABLE",
+                          message: "Camera not available.",
+                          details: nil))
+    }
+  }
+}
+
+extension AppDelegate: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    if let image = info[UIImagePickerController.InfoKey.imageUrl] as? URL {
+      let imagePath = imageUrl.path
+
+      if let controller = window?.rootViewController as? FlutterViewController {
+        let channel = FlutterMethodChannel(name: "com.example.native_communicator", binaryMessenger: controller.binaryMessenger)
+        channel.invokeMethod("takePicture", arguments: imagePath)
+      }
+    }
+    picker.dismiss(animated: true, completion: nil)
+  } 
+
+  // func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+  //   picker.dismiss(animated: true, completion: nil)
+  // }
 }
