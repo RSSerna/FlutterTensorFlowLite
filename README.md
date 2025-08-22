@@ -18,3 +18,8 @@ samples, guidance on mobile development, and a full API reference.
 
 cd /ios/
 pods install
+
+
+App That has TensorFlow Models
+Speech Recognition
+Method Channels
