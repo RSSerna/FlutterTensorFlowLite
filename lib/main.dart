@@ -69,17 +69,17 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
     try {
-      var input = List.generate(
-          1, //Numero de Imagines
-          (i) => List.generate(
-              224, // Altura de Imagen
-              (j) => List.generate(
-                  224, // Ancho de Imagen
-                  (k) => List.generate(
-                      3, // RGB
-                      (l) => 0.5))));
+      // var input = List.generate(
+      //     1, //Numero de Imagines
+      //     (i) => List.generate(
+      //         224, // Altura de Imagen
+      //         (j) => List.generate(
+      //             224, // Ancho de Imagen
+      //             (k) => List.generate(
+      //                 3, // RGB
+      //                 (l) => 0.5))));
 
-      var result = await widget.tensorFlowService.runModel(input);
+      var result = await widget.tensorFlowService.runModel(_image!);
       _modelStatus = result != null
           ? 'Model run successfully: $result results'
           : 'Model run failed';
