@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: MyHomePage(
-        title: 'Flutter Demo Home Page',
+        title: 'TensorFlow Demo',
         tensorFlowService: tensorFlowService,
       ),
     );
@@ -52,8 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
   File? _image;
 
   Future<void> _pickImage() async {
-    // Implement image picking logic here
-    // For example, using image_picker package
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -94,14 +92,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,23 +100,38 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                _modelStatus,
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              (_image != null)
+                  ? Image.file(
+                      _image!,
+                      height: 200,
+                      width: 200,
+                      fit: BoxFit.cover,
+                    )
+                  : const Text('No image selected'),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text('Pick Image'),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                  onPressed: _runModel, child: const Text('Run Model')),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        onPressed: _runModel,
+        tooltip: 'Run Model',
+        child: const Icon(Icons.play_arrow),
       ),
     );
   }
