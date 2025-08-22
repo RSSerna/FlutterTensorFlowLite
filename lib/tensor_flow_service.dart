@@ -41,13 +41,13 @@ class TensorFlowService {
     }
   }
 
-  List<List<List<List<double>>>> input = List.generate(
-      1, //Numero de Imagines
-      (i) => List.generate(
-          224, // Altura de Imagen
-          (j) => List.generate(
-              224, // Ancho de Imagen
-              (k) => List.generate(
-                  3, // RGB
-                  (l) => 0.0))));
+  // List<List<List<List<double>>>> input = List.generate(
+  //     1, //Numero de Imagines
+  //     (i) => List.generate(
+  //         224, // Altura de Imagen
+  //         (j) => List.generate(
+  //             224, // Ancho de Imagen
+  //             (k) => List.generate(
+  //                 3, // RGB
+  //                 (l) => 0.0))));
 }
