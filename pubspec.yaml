@@ -37,6 +37,7 @@ dependencies:
   tflite_flutter: ^0.11.0
   image_picker: ^1.0.4
   image: ^4.0.17
+  speech_to_text: ^7.0.0
 
 dev_dependencies:
   flutter_test:
