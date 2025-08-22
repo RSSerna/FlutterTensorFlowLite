@@ -1,22 +1,29 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tflite_demo/speech_service.dart';
 import 'package:flutter_tflite_demo/tensor_flow_service.dart';
 import 'package:image_picker/image_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final TensorFlowService tensorFlowService = TensorFlowService();
+  final SpeechService speechService = SpeechService();
   await tensorFlowService.loadModel();
   runApp(MyApp(
     tensorFlowService: tensorFlowService,
+    speechService: speechService,
   ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.tensorFlowService});
+  const MyApp(
+      {super.key,
+      required this.tensorFlowService,
+      required this.speechService});
 
   final TensorFlowService tensorFlowService;
+  final SpeechService speechService;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +36,7 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(
         title: 'TensorFlow Demo',
         tensorFlowService: tensorFlowService,
+        speechService: speechService,
       ),
     );
   }
@@ -39,9 +47,11 @@ class MyHomePage extends StatefulWidget {
     super.key,
     required this.title,
     required this.tensorFlowService,
+    required this.speechService,
   });
 
   final String title;
+  final SpeechService speechService;
   final TensorFlowService tensorFlowService;
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -92,6 +102,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _toogleListening() async {
+    if (widget.speechService.isListening) {
+      widget.speechService.stopListening();
+    } else {
+      await widget.speechService.startListening();
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,6 +123,19 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Text(
+                'Recognition: ${widget.speechService.recognizedText}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 24),
+              ),
+              ElevatedButton(
+                onPressed: _toogleListening,
+                child: Text(widget.speechService.isListening
+                    ? 'Stop Listening'
+                    : 'Start Listening'),
+              ),
+              Divider(),
+              SizedBox(height: 20),
               Text(
                 _modelStatus,
                 textAlign: TextAlign.center,
