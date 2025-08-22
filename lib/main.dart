@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tflite_demo/native_communicator.dart';
 import 'package:flutter_tflite_demo/speech_service.dart';
 import 'package:flutter_tflite_demo/tensor_flow_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -59,6 +60,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _modelStatus = 'Click to run model';
+  String _batteryLevel = 'No Battery Level';
   File? _image;
 
   Future<void> _pickImage() async {
@@ -133,6 +135,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text(widget.speechService.isListening
                     ? 'Stop Listening'
                     : 'Start Listening'),
+              ),
+              Divider(),
+              // Text(
+              //   'Battery Level: ${widget.speechService.batteryLevel}%',
+              //   style: Theme.of(context).textTheme.headlineMedium,
+              // ),
+              ElevatedButton(
+                  onPressed: () async {
+                    _batteryLevel = await NativeCommunicator.invokeNativeMethod(
+                        'getBatteryLevel');
+                    setState(() {});
+                  },
+                  child: Text('Get Battery Level')),
+              Text(
+                'Battery Level: $_batteryLevel',
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
               Divider(),
               SizedBox(height: 20),
