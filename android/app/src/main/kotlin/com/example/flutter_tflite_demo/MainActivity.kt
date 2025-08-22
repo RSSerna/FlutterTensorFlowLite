@@ -20,6 +20,8 @@ class MainActivity: FlutterActivity() {
                 } else {
                     result.error("UNAVAILABLE", "Battery level not available.", null)
                 }
+            } else if (call.method == "takePicture") {
+                takePicture(result)
             } else {
                 result.notImplemented()
             }
@@ -31,4 +33,23 @@ class MainActivity: FlutterActivity() {
         return batteryManager.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)  
     }
 
+    private void takePicture() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            startActivityResult(takePictureIntent, 1);
+        } else
+        {
+            result.error("UNAVAILABLE", "Camera not available.", null)
+        }
+    }
+
+    @override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+            String imagePath = data.getData().toString();
+            new MethodChannel(flutterEngine?.dartExecutor, CHANNEL).invokeMethod("takePicture", imagePath);
+        }
+    }
 }
