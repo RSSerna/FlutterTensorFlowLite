@@ -9,11 +9,11 @@ class NativeCommunicator {
     return version;
   }
 
-  static Future<String> invokeNativeMethod(String methodName,
+  static Future<String>? invokeNativeMethod(String methodName,
       [dynamic arguments]) async {
     try {
       final result = await _channel.invokeMethod(methodName, arguments);
-      return result ?? 'Result is null';
+      return result;
     } on PlatformException catch (e) {
       throw Exception('Failed to invoke native method: ${e.message}');
     }

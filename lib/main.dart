@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_tflite_demo/native_communicator.dart';
 import 'package:flutter_tflite_demo/speech_service.dart';
 import 'package:flutter_tflite_demo/tensor_flow_service.dart';
@@ -59,7 +60,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _modelStatus = 'Click to run model';
+  String _outputMessage = 'Click to run model';
   String _batteryLevel = 'No Battery Level';
   File? _image;
 
@@ -75,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _runModel() async {
     if (_image == null) {
-      _modelStatus = 'No image selected';
+      _outputMessage = 'No image selected';
       setState(() {});
       debugPrint('No image selected');
       return;
@@ -92,15 +93,30 @@ class _MyHomePageState extends State<MyHomePage> {
       //                 (l) => 0.5))));
 
       var result = await widget.tensorFlowService.runModel(_image!);
-      _modelStatus = result != null
+      _outputMessage = result != null
           ? 'Model run successfully: $result results'
           : 'Model run failed';
     } catch (e) {
-      _modelStatus = 'Error running model: $e';
+      _outputMessage = 'Error running model: $e';
     } finally {
       setState(() {
-        debugPrint(_modelStatus);
+        debugPrint(_outputMessage);
       });
+    }
+  }
+
+  Future<void> _takePicture() async {
+    try {
+      final String? pickedFile =
+          await NativeCommunicator.invokeNativeMethod('takePicture');
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile);
+        });
+      }
+    } on PlatformException catch (e) {
+      _outputMessage = 'Error taking picture: ${e.message}';
+      setState(() {});
     }
   }
 
@@ -144,7 +160,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                   onPressed: () async {
                     _batteryLevel = await NativeCommunicator.invokeNativeMethod(
-                        'getBatteryLevel');
+                            'getBatteryLevel') ??
+                        'Failed to get battery level';
                     setState(() {});
                   },
                   child: Text('Get Battery Level')),
@@ -155,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Divider(),
               SizedBox(height: 20),
               Text(
-                _modelStatus,
+                _outputMessage,
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 20),
@@ -170,6 +187,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: _pickImage,
                 child: const Text('Pick Image'),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _takePicture,
+                child: const Text('Take Picture'),
               ),
               SizedBox(height: 20),
               ElevatedButton(
